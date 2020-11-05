@@ -1,7 +1,8 @@
 # Miniseră automată RTOS
 Tema proiectului este o miniseră automată. Aceasta are ca scop monitorizarea și întreținerea automată a plantelor, asigurând temperatura optimă și gradul de irigație potrivit.
 # Arhitectura sistemului și logica proiectului
-https://user-images.githubusercontent.com/54595551/67507898-8c405900-f698-11e9-8f7c-165a0075ce05.png
+![transmisia_bloc](https://user-images.githubusercontent.com/54595551/98228377-2f40d980-1f61-11eb-87e6-ef77fc947e2b.png)
+![receptia_bloc](https://user-images.githubusercontent.com/54595551/98228436-4384d680-1f61-11eb-94e2-5ce4da04723a.png)
 
 Proiectul constă din două părți: una de transmisie și una de recepție.
 
