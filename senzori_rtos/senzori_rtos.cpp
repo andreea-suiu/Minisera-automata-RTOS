@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------------------
-// Proiect     : Sera automata.
+// Proiect     : Minisera automata RTOS.
 // Autor       : Șuiu-Cristea Andreea-Cristina
-// Data        : 04.11.2020
+// Data        : 05.11.2020
 //---------------------------------------------------------------------------------------
 // Descriere   : Main File. Cuprinde task-urile pentru citirea datelor de la senzorul de temperatura si cel de umiditate.
 //---------------------------------------------------------------------------------------
