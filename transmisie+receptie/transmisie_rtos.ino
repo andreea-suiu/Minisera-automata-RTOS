@@ -21,29 +21,28 @@ TaskHandle_t  Task_senzor_umiditate_handle;
 TaskHandle_t  Task_transmisie_handle;
 QueueHandle_t Queue_Handle = NULL;
 
-struct date_transmise
+typedef struct date_transmise
 {
   uint8_t date_transmise_mediu[4];
   unsigned int sensorValue_Sol;
-};
+} date_transmise;
 
-struct date_transmise date_transmise;
+date_transmise my_date_transmise;
 
 void setup()
 {
   Serial.begin(9600);
   // crearea task-urilor
-  xTaskCreate (Task_senzor_temp, "Task_senzor_temp", 100, NULL, 1, &Task_senzor_temp_handle);
+  xTaskCreate (Task_senzor_temp, "Task_senzor_temp", 192, NULL, 1, &Task_senzor_temp_handle);
   xTaskCreate (Task_senzor_umiditate, "Task_senzor_umiditate", 100, NULL, 1, &Task_senzor_umiditate_handle);
   xTaskCreate (Task_transmisie, "Task_transmisie", 100, NULL, 2, &Task_transmisie_handle);
-  Queue_Handle = xQueueCreate(10, sizeof(struct date_transmise));
+  Queue_Handle = xQueueCreate(10, sizeof(date_transmise));
 }
 
 // task pentru masurarea temperaturii
 // folosirea librariei create pentru senzorul de temperatura DHT11 
 void Task_senzor_temp(void *param)
 {
-
    (void) param;
    Senzor_Temperatura senzor_temp(6); // crearea unui obiect de tip Senzor_Temperatura
    //char data[5];
@@ -54,19 +53,19 @@ void Task_senzor_temp(void *param)
   {
     senzor_temp.Request();    
     senzor_temp.Raspuns();   
-    date_transmise.date_transmise_mediu[0] = senzor_temp.Primire_date();
-    date_transmise.date_transmise_mediu[1] = senzor_temp.Primire_date();
-    date_transmise.date_transmise_mediu[2] = senzor_temp.Primire_date();
-    date_transmise.date_transmise_mediu[3] = senzor_temp.Primire_date();
+    my_date_transmise.date_transmise_mediu[0] = senzor_temp.Primire_date();
+    my_date_transmise.date_transmise_mediu[1] = senzor_temp.Primire_date();
+    my_date_transmise.date_transmise_mediu[2] = senzor_temp.Primire_date();
+    my_date_transmise.date_transmise_mediu[3] = senzor_temp.Primire_date();
     /*date_mediu[0]  = senzor_temp.Primire_date();  // primii 8 biti din valoarea umiditatii(partea intreaga)
     date_mediu[1]  = senzor_temp.Primire_date();  // urmatorii 8 biti din valoarea umiditatii(partea zecimala)
     date_mediu[2]  = senzor_temp.Primire_date();  // primii 8 biti din valoarea temperaturii
     date_mediu[3]  = senzor_temp.Primire_date();  // urmatorii 8 biti din valoarea temperaturii*/
     SumaBiti   = senzor_temp.Primire_date();  // variabila ce aduna toti bitii(check sum)
     
-    if ((date_transmise.date_transmise_mediu[0] + date_transmise.date_transmise_mediu[1] + date_transmise.date_transmise_mediu[2] + date_transmise.date_transmise_mediu[3]) != SumaBiti) // verifica numar de biti; daca suma lor este diferita de valoarea din SumaBiti => eroare
+    if ((my_date_transmise.date_transmise_mediu[0] + my_date_transmise.date_transmise_mediu[1] + my_date_transmise.date_transmise_mediu[2] + my_date_transmise.date_transmise_mediu[3]) != SumaBiti) // verifica numar de biti; daca suma lor este diferita de valoarea din SumaBiti => eroare
     {
-      Serial.print("Error");
+      //Serial.print("Error");
     }
     else
     { 
@@ -74,9 +73,9 @@ void Task_senzor_temp(void *param)
       date_transmise.date_transmise_mediu[1]  = date_mediu[1];
       date_transmise.date_transmise_mediu[2]  = date_mediu[2];
       date_transmise.date_transmise_mediu[3]  = date_mediu[3];*/
-      if(!xQueueSend(Queue_Handle, &date_transmise.date_transmise_mediu ,1000))
+      if(!xQueueSend(Queue_Handle, &my_date_transmise ,1000))
       {
-         Serial.println("Coada nu a putut trimite nicio data!");    
+         //Serial.println("Coada nu a putut trimite nicio data!");    
       }
       /*if(!xQueueSend(Queue_Handle, &date_transmise.Val2_Hum ,1000))
       {
@@ -125,10 +124,10 @@ void Task_senzor_umiditate(void *param)
     unsigned int sensorValue = senzor_umiditate.CitesteADC(0);
     //maparea rezultatului
     sensorValue = map(sensorValue, 0, 1023, 100, 0);
-    date_transmise.sensorValue_Sol = sensorValue;
-    if(!xQueueSend(Queue_Handle, &date_transmise.sensorValue_Sol ,1000))
+    my_date_transmise.sensorValue_Sol = sensorValue;
+    if(!xQueueSend(Queue_Handle, &my_date_transmise ,1000))
     {
-      Serial.println("Coada nu a putut trimite nicio data!");    
+      //Serial.println("Coada nu a putut trimite nicio data!");    
     }
     //itoa(sensorValue,buffer_analog,10); 
     //Serial.println(buffer_analog);
@@ -145,28 +144,30 @@ void Task_transmisie(void *param)
   radio.openWritingPipe(address); 
   radio.setPALevel(RF24_PA_MIN);  
   radio.stopListening();
-  struct date_transmise_local
+  typedef struct date_transmise_local
   {
     uint8_t date_transmise_mediu_local[4];
     unsigned int sensorValue_Sol;
-  };
-struct date_transmise_local date_transmise_local;
+  } date_transmise_local;
+  
+  date_transmise_local my_date_transmisie_task;
+
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while(1)
   {
-    if(xQueueReceive(Queue_Handle,&date_transmise_local,1000))
+    if(xQueueReceive(Queue_Handle,&my_date_transmisie_task,1000))
     {
-            Serial.println("Date primite!");  
-            Serial.println(date_transmise_local.date_transmise_mediu_local[0]);  
-            Serial.println(date_transmise_local.date_transmise_mediu_local[1]);  
-            Serial.println(date_transmise_local.date_transmise_mediu_local[2]);
-            Serial.println(date_transmise_local.date_transmise_mediu_local[3]);
-            Serial.println(date_transmise_local.sensorValue_Sol);
-            radio.write(&date_transmise_local, sizeof(date_transmise_local));
+            /*Serial.println("Date primite!");  
+            Serial.println(my_date_transmisie_task.date_transmise_mediu_local[0]);  
+            Serial.println(my_date_transmisie_task.date_transmise_mediu_local[1]);  
+            Serial.println(my_date_transmisie_task.date_transmise_mediu_local[2]);
+            Serial.println(my_date_transmisie_task.date_transmise_mediu_local[3]);
+            Serial.println(my_date_transmisie_task.sensorValue_Sol);*/
+            radio.write(&my_date_transmisie_task, sizeof(date_transmise_local));
       }
       else
       {
-        Serial.println("Datele nu au fost receptionate!");   
+        //Serial.println("Datele nu au fost receptionate!");   
       }
     vTaskDelayUntil(&xLastWakeTime, (1000/portTICK_PERIOD_MS));
   }  

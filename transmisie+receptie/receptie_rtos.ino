@@ -25,7 +25,7 @@ struct date_primite date_primite;
 void setup() 
 {  
    DDRD |= 0b11111111; // setare pin 2 de pe portul D ca iesire
-   PORTD = 0b00000000;
+   PORTD = 0b00000100;
    Serial.begin(9600);
    xTaskCreate(Task_receptie1, "Task_receptie",100, NULL,1, &Task_receptie);
    xTaskCreate(Task_Display_LCD, "Task_LCD",100, NULL,1, &Task_LCD);
@@ -60,6 +60,7 @@ void Task_receptie1(void *param)
       date_primite.sensorValue_Sol;   
       if(date_primite.sensorValue_Sol <= 20)
       {
+        //Serial.println("aici1");
         xSemaphoreGive(Semaphore);  
       }
     }     
@@ -118,10 +119,11 @@ void Task_Pompa(void *param)
         } */
         if(xSemaphoreTake(Semaphore, portMAX_DELAY) == pdPASS)
         {
-          Serial.print("aici");         
-          PORTD = 0b00000100;
-          vTaskDelay(10000/portTICK_PERIOD_MS); 
+         // Serial.print("aici");         
           PORTD = 0b00000000;
+          vTaskDelay(1000/portTICK_PERIOD_MS); 
+          PORTD = 0b00000100;
+          vTaskDelay(1000/portTICK_PERIOD_MS);
         }
   }  
 }
