@@ -12,5 +12,10 @@ Toate aceste date vor fi transmise prin intermediul modulului wireless NRF4L01.
 Partea de recepție reprezintă controlul mini pompei de apă și afișarea datelor colectate de către senzori pe LCD (temperatura în grade, umiditatea în procent). Datele transmise sunt recepționate cu ajutorul modulului NRF24L01.
 În ceea ce privește mini poma de apă, aceasta este comandată cu ajutorul unui releu. Aceasta pornește când umiditatea măsurată de senzorul de umiditate a solului este mai mare sau egală cu 20% (cu cât este mai mare, cu atât solul este mai uscat). După ce pornește și udă un anumit timp, se vor mai face verificări ale umidității după o oră deoarece trebuie să se stabilizeze umiditatea solului în urma acționării pompei cu apă.
 
+
+![Drawing2](https://user-images.githubusercontent.com/54595551/103771223-fa6c0400-502f-11eb-85a0-14e4f82a6b81.png)
+
+
+
 ![schema_bloc_soft](https://user-images.githubusercontent.com/54595551/103291123-be172300-49f3-11eb-9c8e-ed036c4f215c.png)
  
