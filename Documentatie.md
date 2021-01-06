@@ -19,3 +19,5 @@ Partea de recepție reprezintă controlul mini pompei de apă și afișarea date
 
 ![schema_bloc_soft](https://user-images.githubusercontent.com/54595551/103291123-be172300-49f3-11eb-9c8e-ed036c4f215c.png)
  
+![schema_bloc_soft_v2_rec](https://user-images.githubusercontent.com/54595551/103797344-0916e300-5051-11eb-8fb9-6ca9fbcf88a4.png)
+![schema_bloc_soft_v3_trans](https://user-images.githubusercontent.com/54595551/103797350-09af7980-5051-11eb-9b40-05778988ca76.png)
